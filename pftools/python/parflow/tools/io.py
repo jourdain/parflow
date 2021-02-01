@@ -748,10 +748,10 @@ class DataAccessor:
         prefix = self._run.Solver.CLM.MetFileName
         directory = self._run.Solver.CLM.MetFilePath
         file_index = int(self._forcing_time / time_slice)
-        t0 = f'{file_index * time_slice:0>6}'
+        t0 = f'{file_index * time_slice + 1:0>6}'
         t1 = f'{(file_index + 1) * time_slice:0>6}'
         file_name = get_absolute_path(
-            f'{directory}/{prefix}/{prefix}.{name}.{t0}_to_{t1}.pfb')
+            f'{directory}/{prefix}.{name}.{t0}_to_{t1}.pfb')
 
         return self._pfb_to_array(file_name)[self._forcing_time % time_slice]
 
