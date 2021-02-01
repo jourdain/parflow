@@ -299,7 +299,7 @@ class Run(BaseRun):
         """Return a DataAccessor to streamline access to
         numpy array of the various field this run is linked to.
         """
-        if self._accessor is None
+        if self._accessor is None:
             self._accessor = DataAccessor(self)
         return self._accessor
 
