@@ -567,20 +567,22 @@ class DataAccessor:
         )
 
     # ---------------------------------------------------------------------------
-    # Slopes X Y Z
+    # Slopes X Y
     # ---------------------------------------------------------------------------
 
     @property
     def slope_x(self):
-        return self._pfb_to_array(self._run.TopoSlopesX.FileName)
+        if self._run.TopoSlopesX.FileName is None:
+            return self._pfb_to_array(f'{self._name}.out.slope_x.pfb')
+        else:
+            return self._pfb_to_array(self._run.TopoSlopesX.FileName)
 
     @property
     def slope_y(self):
-        return self._pfb_to_array(self._run.TopoSlopesY.FileName)
-
-    @property
-    def slope_z(self):
-        return self._pfb_to_array(self._run.TopoSlopesZ.FileName)
+        if self._run.TopoSlopesY.FileName is None:
+            return self._pfb_to_array(f'{self._name}.out.slope_y.pfb')
+        else:
+            return self._pfb_to_array(self._run.TopoSlopesY.FileName)
 
     # ---------------------------------------------------------------------------
     # Computed Porosity
