@@ -177,6 +177,7 @@ LW_Test.Phase.water.Viscosity.Value = 1.0
 
 LW_Test.Contaminants.Names = ''
 
+
 #-----------------------------------------------------------------------------
 # Gravity
 #-----------------------------------------------------------------------------
@@ -415,6 +416,7 @@ LW_Test.PhaseSources.water.Type = 'Constant'
 LW_Test.PhaseSources.water.GeomNames = 'domain'
 LW_Test.PhaseSources.water.Geom.domain.Value = 0.0
 
+
 #----------------------------------------------------------------
 # CLM Settings:
 # ------------------------------------------------------------
@@ -505,9 +507,78 @@ LW_Test.Solver.Linear.MaxRestarts = 2
 LW_Test.Solver.Linear.Preconditioner = 'PFMGOctree'
 LW_Test.Solver.Linear.Preconditioner.PCMatrixType = 'FullJacobian'
 
-#-----------------------------------------------------------------------------
-# Run Simulation 
-#-----------------------------------------------------------------------------
 
-result = LW_Test.validate(verbose=True)
-print("Found {} errors".format(result))
+
+#  ___                           _     _                        
+# |_ _|_ __   ___ ___  _ __  ___(_)___| |_ ___ _ __   ___ _   _ 
+#  | || '_ \ / __/ _ \| '_ \/ __| / __| __/ _ \ '_ \ / __| | | |
+#  | || | | | (_| (_) | | | \__ \ \__ \ ||  __/ | | | (__| |_| |
+# |___|_| |_|\___\___/|_| |_|___/_|___/\__\___|_| |_|\___|\__, |
+#                                                         |___/ 
+#  _____         _      ____                    
+# |_   _|__  ___| |_   / ___|__ _ ___  ___  ___ 
+#   | |/ _ \/ __| __| | |   / _` / __|/ _ \/ __|
+#   | |  __/\__ \ |_  | |__| (_| \__ \  __/\__ \
+#   |_|\___||___/\__|  \____\__,_|___/\___||___/
+                                              
+
+import unittest
+
+#----------------------------------------------------------------
+# Inconsistency Test Case 1:
+# Patch[".{patch_name}"].BCPressure[".{interval_name}"][".{phase_name}"] has a class unmatched anywhere, 
+# has no __from__, and no specified handler
+# This may just be missing a __from__: /Phase/Names, the only handler for the several other .{phase_name} entries
+# ------------------------------------------------------------
+
+class Case1(unittest.TestCase):
+    def test(self):
+        """ Should be able to set Patch[".{patch_name}"].BCPressure[".{interval_name}"][".{phase_name}"].IntValue """
+        LW_Test.Patch.x_lower.BCPressure.alltime.water.IntValue = 0.0
+
+#----------------------------------------------------------------
+# Inconsistency Test Case 2:
+# Patch[".{patch_name}"].BCSaturation[".{phase_name}"] has a class unmatched anywhere, 
+# has no __from__, and no specified handler
+# This may just be missing a __from__: /Phase/Names, the only handler for the several other .{phase_name} entries
+# ------------------------------------------------------------
+
+class Case2(unittest.TestCase):
+    def test(self):
+        """ Should be able to set Patch[".{patch_name}"].BCSaturation[".{phase_name}"].Value """
+        LW_Test.Patch.x_lower.BCSaturation.water.Value = 0.0
+
+#----------------------------------------------------------------
+# Inconsistency Test Case 3 / 4:
+# Wells[".{well_name}"][".{interval_name}"].Concentration[".{phase_name}"] and
+# Wells[".{well_name}"][".{interval_name}"].Concentration[".{phase_name}"][".{contaminant_name}"] 
+# have classes not matched anywhere, have no __from__, and no specified handlers
+# These may just be missing a __from__: /Phase/Names and a __from__: /Contaminant/Names, the only handlers for 
+# the several other .{phase_name} and .{contaminant_name} entries
+# ------------------------------------------------------------
+
+class Case3and4(unittest.TestCase):
+    def test(self):
+        """ Should be able to set Wells[".{well_name}"][".{interval_name}"].Concentration[".{phase_name}"][".{contaminant_name}"] """
+        LW_Test.Wells.Names = 'well1'
+        LW_Test.Contaminants.Names = 'contaminant1'
+        LW_Test.Wells.well1.alltime.Concentration.water.contaminant1.Value = 0.0
+
+#----------------------------------------------------------------
+# Inconsistency Test Case 5:
+# PhaseSources.Geom[".{geom_input_name}"] has a class unmatched anywhere, no __from__, no specified handler
+# This may be a mistaken double entry, since it's nephew is identical and makes more sense
+# ------------------------------------------------------------
+
+class Case5(unittest.TestCase):
+    def test(self):
+        """ Should be able to set PhaseSources.Geom[".{geom_input_name}"].Value """
+        LW_Test.PhaseSources.Geom.domain.Value = 0.0
+
+
+#-----------------------------------------------------------------------------
+# Run Validation 
+#-----------------------------------------------------------------------------
+unittest.main()
+# result = LW_Test.validate(verbose=True)
+# print("Found {} errors".format(result))
